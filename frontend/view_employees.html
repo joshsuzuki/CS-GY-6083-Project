@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Employees</title>
+    <script>
+        function fetchEmployees() {
+            fetch('../middleware/view_employees.php')
+            .then(response => response.json())
+            .then(data => {
+                const employeeTable = document.getElementById('employeeTable');
+                employeeTable.innerHTML = `
+                    <tr>
+                        <th>ID</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Salary</th>
+                        <th>Hire Date</th>
+                    </tr>
+                `;
+                data.forEach(emp => {
+                    employeeTable.innerHTML += `
+                        <tr>
+                            <td>${emp.id}</td>
+                            <td>${emp.first_name}</td>
+                            <td>${emp.last_name}</td>
+                            <td>${emp.salary}</td>
+                            <td>${emp.hire_date}</td>
+                        </tr>
+                    `;
+                });
+            })
+            .catch(error => console.error('Error fetching employees:', error));
+        }
+    </script>
+</head>
+<body onload="fetchEmployees()">
+    <h2>Employee List</h2>
+    <table border="1" id="employeeTable"></table>
+</body>
+</html>
