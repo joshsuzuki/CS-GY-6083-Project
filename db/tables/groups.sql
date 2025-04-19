@@ -1,0 +1,6 @@
+DROP TABLE IF EXISTS groups;
+
+CREATE TABLE groups (
+    group_id INT AUTO_INCREMENT PRIMARY KEY,
+    group_name VARCHAR(50) NOT NULL,
+);
