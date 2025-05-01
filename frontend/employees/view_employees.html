@@ -6,7 +6,7 @@
     <title>View Employees</title>
     <script>
         function fetchEmployees() {
-            fetch('../middleware/view_employees.php')
+            fetch('../../middleware/view_employees.php')
             .then(response => response.json())
             .then(data => {
                 const employeeTable = document.getElementById('employeeTable');
