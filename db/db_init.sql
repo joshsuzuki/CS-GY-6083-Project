@@ -2,8 +2,8 @@ DROP DATABASE IF EXISTS project_db;
 CREATE DATABASE project_db;
 USE project_db;
 
+------------------TABLES-----------------------------------------------------
 DROP TABLE IF EXISTS employees;
-
 CREATE TABLE employees (
     id INT AUTO_INCREMENT PRIMARY KEY,
     first_name VARCHAR(50) NOT NULL,
@@ -14,7 +14,6 @@ CREATE TABLE employees (
 );
 
 DROP TABLE IF EXISTS employee_auth;
-
 CREATE TABLE employee_auth (
     employee_id INT PRIMARY KEY,
     password_hash VARCHAR(255) NOT NULL,
@@ -22,14 +21,25 @@ CREATE TABLE employee_auth (
 );
 
 DROP TABLE IF EXISTS tbl_groups;
-
 CREATE TABLE tbl_groups (
     group_id INT AUTO_INCREMENT PRIMARY KEY,
     group_name VARCHAR(50) NOT NULL
 );
 
 DROP TABLE IF EXISTS balances;
+CREATE TABLE balances (
+    account INT NOT NULL,
+    entity INT NOT NULL,
+    counterparty INT NOT NULL,
+    month INT NOT NULL,
+    year INT NOT NULL,
+    amount DECIMAL(18,2) DEFAULT 0,
+    n_id_updated_by INT NOT NULL,
+    dt_last_updated DATETIME DEFAULT NOW(),
+    PRIMARY KEY (account, entity, counterparty,month,year)
+);
 
+DROP TABLE IF EXISTS balances_stage;
 CREATE TABLE balances (
     account INT NOT NULL,
     entity INT NOT NULL,
@@ -43,7 +53,6 @@ CREATE TABLE balances (
 );
 
 DROP TABLE IF EXISTS employees_groups;
-
 CREATE TABLE employees_groups (
     group_id INT NOT NULL,
     employee_id INT NOT NULL,
@@ -51,6 +60,17 @@ CREATE TABLE employees_groups (
     FOREIGN KEY (employee_id) REFERENCES employees(id) ON DELETE CASCADE,
     FOREIGN KEY (group_id) REFERENCES tbl_groups(group_id) ON DELETE CASCADE
 );
+
+DROP TABLE IF EXISTS groups_entities;
+CREATE TABLE groups_entities (
+    group_id INT NOT NULL,
+    entity INT NOT NULL,
+    permission VARCHAR(50) NOT NULL,
+    PRIMARY KEY (group_id, entity),
+    FOREIGN KEY (group_id) REFERENCES tbl_groups(group_id) ON DELETE CASCADE
+);
+
+------------------VIEWS-----------------------------------------------------
 
 DROP VIEW IF EXISTS vw_balance_by_qtr;
 CREATE VIEW vw_balance_by_qtr
@@ -69,6 +89,10 @@ GROUP BY account,entity,counterparty,CASE
         WHEN month IN (7, 8, 9) THEN 'Q3'
         WHEN month IN (10, 11, 12) THEN 'Q4' END;
 
+
+----------------PROCEDURES-------------------------------------------------
+----------------FUNCTIONS-------------------------------------------------
+-----------------TRIGGERS-------------------------------------------------
 DELIMITER $$
 
 CREATE TRIGGER after_employee_fired
@@ -81,6 +105,7 @@ BEGIN
 END$$
 DELIMITER ;
 
+------------------INIT DATA-----------------------------------------------------
 INSERT INTO employees (first_name, last_name)
 VALUES ('josh','s');
 
