@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Groups</title>
+    <script>
+        function fetchGroups() {
+            fetch('../../middleware/view_groups.php')
+            .then(response => response.json())
+            .then(data => {
+                const groupTable = document.getElementById('groupTable');
+                
+                // Table Header
+                groupTable.innerHTML = `
+                    <tr>
+                        <th>ID</th>
+                        <th>Group Name</th>
+                        <th>View Employees</th>
+                        <th>View Entities</th>
+                        <th>Delete</th>
+                    </tr>
+                `;
+
+                // Populate table rows
+                data.forEach(grp => {
+                    groupTable.innerHTML += `
+                        <tr>
+                            <td>${grp.group_id}</td>
+                            <td>${grp.group_name}</td>
+                            <td><a href="../../middleware/view_group_employees.php?group_id=${grp.group_id}">View Employees</a></td>
+                            <td><a href="../../middleware/view_group_entities.php?group_id=${grp.group_id}">View Entities</a></td>
+                            <td><button onclick="deleteGroup(${grp.group_id})">Delete</button></td>
+                        </tr>
+                    `;
+                });
+            })
+            .catch(error => console.error('Error fetching groups:', error));
+        }
+
+        function deleteGroup(groupId) {
+            fetch(`../../middleware/delete_group.php?group_id=${groupId}`, { method: 'GET' })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    fetchGroups(); // Refresh the table after deletion
+                } else {
+                    console.error("Error deleting group:", data.error);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+    </script>
+</head>
+<body onload="fetchGroups()">
+    <h2>Group List</h2>
+    <table border="1" id="groupTable"></table>
+    <button onclick="window.location.href='add_group.html'">Add Group</button>
+
+</body>
+</html>
