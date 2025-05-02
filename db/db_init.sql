@@ -87,6 +87,11 @@ VALUES ('josh','s');
 INSERT INTO employees (first_name, last_name)
 VALUES ('john','m');
 
+INSERT INTO employee_auth(employee_id,password_hash)
+VALUES
+(1,'$2y$12$VwaHReZde1zNoCrZdH2uBuSuXGMlqJLRW1w0ytO8FOvIrG66RoDhO'),
+(2,'$2y$12$VwaHReZde1zNoCrZdH2uBuSuXGMlqJLRW1w0ytO8FOvIrG66RoDhO');
+
 INSERT INTO balances (account, entity, counterparty, month, year, amount, n_id_updated_by)
 VALUES
 (1, 1, 1, 1, 2023, 1000.00, 1),
