@@ -10,7 +10,7 @@ if ($conn->connect_error) {
 
 $firstName = $_POST['firstName'];
 $lastName = $_POST['lastName'];
-$defaultPassword = "default"; // Default password before hashing
+$defaultPassword = "default";
 $hashedPassword = password_hash($defaultPassword, PASSWORD_DEFAULT);
 
 // Insert into employees table
