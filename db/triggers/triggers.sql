@@ -7,10 +7,10 @@ BEGIN
     END IF;
 END;
 
-CREATE TRIGGER after_employee_created
-AFTER UPDATE ON employees
-FOR EACH ROW
-BEGIN
-    INSERT INTO employee_auth (employee_id, password_hash)
-    VALUES (NEW.id, SHA2('default', 256));
-END;
+-- CREATE TRIGGER after_employee_created
+-- AFTER INSERT ON employees
+-- FOR EACH ROW
+-- BEGIN
+--     INSERT INTO employee_auth (employee_id, password_hash)
+--     VALUES (NEW.id, '$2y$12$VwaHReZde1zNoCrZdH2uBuSuXGMlqJLRW1w0ytO8FOvIrG66RoDhO');
+-- END;
