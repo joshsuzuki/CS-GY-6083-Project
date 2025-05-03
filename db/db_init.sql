@@ -1,7 +1,7 @@
 DROP DATABASE IF EXISTS project_db;
 CREATE DATABASE project_db;
 USE project_db;
-
+SET SQL_SAFE_UPDATES = 0;
 -- Tables ------------------------------------------------------------
 DROP TABLE IF EXISTS employees;
 CREATE TABLE employees (
@@ -63,7 +63,6 @@ CREATE TABLE balances_stage (
     month INT NOT NULL,
     year INT NOT NULL,
     amount DECIMAL(18,2) DEFAULT 0,
-    n_id_updated_by INT NOT NULL,
     operation VARCHAR(10) NOT NULL,
     PRIMARY KEY (account, entity, counterparty,month,year)
 );
@@ -157,16 +156,16 @@ BEGIN
     CREATE TEMPORARY TABLE temp_merge AS
     SELECT bs.account, bs.entity, bs.counterparty, bs.month, bs.year, bs.amount, emp_id AS n_id_updated_by
     FROM balances_stage bs
-    INNER JOIN vw_employee_entity vee ON bs.entity = vee.entity
-    WHERE vee.employee_id = emp_id
+    INNER JOIN vw_employee_entity vee ON bs.entity = vee.entity_id
+    WHERE vee.id = emp_id
     AND bs.operation = 'merge';
 
     -- Temp delete table
     CREATE TEMPORARY TABLE temp_delete AS
     SELECT bs.account, bs.entity, bs.counterparty, bs.month, bs.year AS n_id_updated_by
     FROM balances_stage bs
-    INNER JOIN vw_employee_entity vee ON bs.entity = vee.entity
-    WHERE vee.employee_id = emp_id
+    INNER JOIN vw_employee_entity vee ON bs.entity = vee.entity_id
+    WHERE vee.id = emp_id
     AND bs.operation = 'delete';
 
     -- Delete from balances table
@@ -174,6 +173,7 @@ BEGIN
     WHERE (account, entity, counterparty, month, year) IN (
         SELECT account, entity, counterparty, month, year FROM temp_delete
     );
+    DROP TEMPORARY TABLE temp_delete;
 
     -- Merge data into balances table
     INSERT INTO balances (account, entity, counterparty, month, year, amount, n_id_updated_by, dt_last_updated)
@@ -182,7 +182,9 @@ BEGIN
         n_id_updated_by = emp_id,
         dt_last_updated = NOW(),
         amount = VALUES(amount);
-
+    DROP TEMPORARY TABLE temp_merge;
+    
+    DELETE FROM balances_stage;
 END $$
 DELIMITER ;
 
@@ -199,7 +201,8 @@ VALUES ('Timmy','Tech');
 INSERT INTO employee_auth(employee_id,password_hash)
 VALUES
 (1,'$2y$12$VwaHReZde1zNoCrZdH2uBuSuXGMlqJLRW1w0ytO8FOvIrG66RoDhO'),
-(2,'$2y$12$VwaHReZde1zNoCrZdH2uBuSuXGMlqJLRW1w0ytO8FOvIrG66RoDhO');
+(2,'$2y$12$VwaHReZde1zNoCrZdH2uBuSuXGMlqJLRW1w0ytO8FOvIrG66RoDhO'),
+(3,'$2y$12$VwaHReZde1zNoCrZdH2uBuSuXGMlqJLRW1w0ytO8FOvIrG66RoDhO');
 
 INSERT INTO tbl_entities(entity_name)
 VALUES
@@ -221,10 +224,3 @@ INSERT INTO employees_groups(employee_id,group_id)
 VALUES
 (1,1),(2,2),(3,3);
 
-INSERT INTO balances (account, entity, counterparty, month, year, amount, n_id_updated_by)
-VALUES
-(1, 1, 1, 1, 2023, 1000.00, 1),
-(1, 1, 1, 2, 2023, 2000.00, 1),
-(1, 1, 1, 3, 2023, 3000.00, 1),
-(4, 2, 4, 4, 2023, 4000.00, 1),
-(5, 3, 5, 5, 2023, 5000.00, 1);

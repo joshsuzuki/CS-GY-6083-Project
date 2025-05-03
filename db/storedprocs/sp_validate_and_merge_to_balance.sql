@@ -6,16 +6,16 @@ BEGIN
     CREATE TEMPORARY TABLE temp_merge AS
     SELECT bs.account, bs.entity, bs.counterparty, bs.month, bs.year, bs.amount, emp_id AS n_id_updated_by
     FROM balances_stage bs
-    INNER JOIN vw_employee_entity vee ON bs.entity = vee.entity
-    WHERE vee.employee_id = emp_id
+    INNER JOIN vw_employee_entity vee ON bs.entity = vee.entity_id
+    WHERE vee.id = emp_id
     AND bs.operation = 'merge';
 
     -- Temp delete table
     CREATE TEMPORARY TABLE temp_delete AS
     SELECT bs.account, bs.entity, bs.counterparty, bs.month, bs.year AS n_id_updated_by
     FROM balances_stage bs
-    INNER JOIN vw_employee_entity vee ON bs.entity = vee.entity
-    WHERE vee.employee_id = emp_id
+    INNER JOIN vw_employee_entity vee ON bs.entity = vee.entity_id
+    WHERE vee.id = emp_id
     AND bs.operation = 'delete';
 
     -- Delete from balances table
