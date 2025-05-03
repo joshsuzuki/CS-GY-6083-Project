@@ -5,7 +5,15 @@ BEGIN
     IF NEW.current_employee = FALSE THEN
         DELETE FROM employees_groups WHERE employee_id = NEW.id;
     END IF;
-END;
+END$$
+
+CREATE TRIGGER salary_update_trigger
+BEFORE UPDATE ON employees
+FOR EACH ROW
+BEGIN
+    INSERT INTO salary_history (employee_id, old_salary)
+    VALUES (OLD.id, OLD.salary);
+END$$
 
 -- CREATE TRIGGER after_employee_created
 -- AFTER INSERT ON employees

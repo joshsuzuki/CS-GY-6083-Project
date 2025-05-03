@@ -70,8 +70,8 @@ CREATE TABLE balances_stage (
 
 DROP TABLE IF EXISTS employees_groups;
 CREATE TABLE employees_groups (
-    group_id INT NOT NULL,
     employee_id INT NOT NULL,
+    group_id INT NOT NULL,
     PRIMARY KEY (group_id, employee_id),
     FOREIGN KEY (employee_id) REFERENCES employees(id) ON DELETE CASCADE,
     FOREIGN KEY (group_id) REFERENCES tbl_groups(group_id) ON DELETE CASCADE
@@ -81,12 +81,12 @@ DROP TABLE IF EXISTS groups_entities;
 CREATE TABLE groups_entities (
     group_id INT NOT NULL,
     entity_id INT NOT NULL,
-    permission VARCHAR(50) NOT NULL,
     PRIMARY KEY (group_id, entity_id),
     FOREIGN KEY (group_id) REFERENCES tbl_groups(group_id) ON DELETE CASCADE,
     FOREIGN KEY (entity_id) REFERENCES tbl_entities(entity_id) ON DELETE CASCADE
 );
 
+-- Views ----------------------------------------------------------------
 DROP VIEW IF EXISTS vw_balance_by_qtr;
 CREATE VIEW vw_balance_by_qtr
 AS
@@ -104,6 +104,12 @@ GROUP BY account,entity,counterparty,CASE
         WHEN month IN (7, 8, 9) THEN 'Q3'
         WHEN month IN (10, 11, 12) THEN 'Q4' END;
 
+DROP VIEW IF EXISTS vw_employee_entity;
+CREATE VIEW vw_employee_entity AS
+SELECT e.id, ge.entity_id
+FROM employees e
+JOIN employees_groups eg ON e.id = eg.employee_id
+JOIN groups_entities ge ON eg.group_id = ge.group_id;
 
 DELIMITER $$
 -- Function ------------------------------------------------------------
@@ -182,10 +188,13 @@ DELIMITER ;
 
 -- Inserts ----------------------------------------------------------------------------
 INSERT INTO employees (first_name, last_name)
-VALUES ('josh','s');
+VALUES ('Freddy','Finance');
 
 INSERT INTO employees (first_name, last_name)
-VALUES ('john','m');
+VALUES ('Harry','HR');
+
+INSERT INTO employees (first_name, last_name)
+VALUES ('Timmy','Tech');
 
 INSERT INTO employee_auth(employee_id,password_hash)
 VALUES
@@ -198,6 +207,19 @@ VALUES
 ('HR 1'),('HR 2'),('HR 3'),('HR 4'),
 ('Tech 1'),('Tech 2'),('Tech 3'),('Tech 4');
 
+INSERT INTO tbl_groups(group_name)
+VALUES
+('Finance'),('H2'),('Tech');
+
+INSERT INTO groups_entities(group_id,entity_id)
+VALUES
+(1,1),(1,2),(1,3),(1,4),
+(2,5),(2,6),(2,7),(2,8),
+(3,9),(3,10),(3,11),(3,12);
+
+INSERT INTO employees_groups(employee_id,group_id)
+VALUES
+(1,1),(2,2),(3,3);
 
 INSERT INTO balances (account, entity, counterparty, month, year, amount, n_id_updated_by)
 VALUES
