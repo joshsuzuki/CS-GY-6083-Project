@@ -25,7 +25,9 @@ if ($stmt->execute()) {
     $authStmt->bind_param("is", $employeeId, $hashedPassword);
 
     if ($authStmt->execute()) {
-        echo "Employee added successfully, and authentication details stored securely!";
+        header("Location: ../frontend/employees/view_employees.html");
+        exit();
+
     } else {
         echo "Error inserting authentication details: " . $authStmt->error;
     }

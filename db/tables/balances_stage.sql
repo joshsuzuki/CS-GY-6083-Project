@@ -1,5 +1,5 @@
 DROP TABLE IF EXISTS balances_stage;
-CREATE TABLE balances (
+CREATE TABLE balances_stage (
     account INT NOT NULL,
     entity INT NOT NULL,
     counterparty INT NOT NULL,
@@ -7,6 +7,6 @@ CREATE TABLE balances (
     year INT NOT NULL,
     amount DECIMAL(18,2) DEFAULT 0,
     n_id_updated_by INT NOT NULL,
-    dt_last_updated DATETIME DEFAULT NOW(),
+    operation VARCHAR(10) NOT NULL,
     PRIMARY KEY (account, entity, counterparty,month,year)
 );

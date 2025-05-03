@@ -16,7 +16,8 @@ $stmt->bind_param("s", $groupName);
 
 if ($stmt->execute()) {
 
-    echo "Group added";
+    header("Location: ../frontend/groups/view_groups.html");
+    exit();
 
 } else {
     echo "Error inserting Group: " . $stmt->error;
