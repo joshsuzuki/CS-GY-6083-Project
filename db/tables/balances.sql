@@ -1,6 +1,7 @@
 DROP TABLE IF EXISTS balances;
 
 CREATE TABLE balances (
+    account INT NOT NULL,
     entity INT NOT NULL,
     counterparty INT NOT NULL,
     month INT NOT NULL,
@@ -8,5 +9,5 @@ CREATE TABLE balances (
     amount DECIMAL(18,2) DEFAULT 0,
     n_id_updated_by INT NOT NULL,
     dt_last_updated DATETIME DEFAULT NOW(),
-    PRIMARY KEY ( entity, counterparty,month,year)
+    PRIMARY KEY ( account,entity, counterparty,month,year)
 );
