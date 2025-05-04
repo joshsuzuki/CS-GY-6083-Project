@@ -32,6 +32,10 @@ SELECT bs.account, bs.entity, bs.counterparty, bs.month, bs.year, bs.amount, 3 A
     INNER JOIN vw_employee_entity vee ON bs.entity = vee.entity_id
     WHERE vee.id = 3
     AND bs.operation = '\'merge\'';
-    
-    
+
+select bal.*
+from balances bal
+join vw_employee_entity vee on bal.entity = vee.entity_id
+where vee.id = ?
+
     select * from vw_salaries_by_group
