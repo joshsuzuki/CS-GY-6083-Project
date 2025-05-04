@@ -154,7 +154,14 @@ FOR EACH ROW
 BEGIN
     INSERT INTO salary_history (employee_id, old_salary)
     VALUES (OLD.id, OLD.salary);
-END$$
+END $$
+
+CREATE TRIGGER remove_single_quotes_before_insert
+BEFORE INSERT ON balances_stage
+FOR EACH ROW
+BEGIN
+    SET NEW.operation = REPLACE(NEW.operation, "'", "");
+END $$
 
 -- Stored Procedure ----------------------------------------------------------------
 DROP PROCEDURE IF EXISTS sp_validate_and_merge_to_balance$$
@@ -198,6 +205,7 @@ BEGIN
 END $$
 DELIMITER ;
 
+-- DML -------------------------------------------------------------------------------
 -- Inserts ----------------------------------------------------------------------------
 INSERT INTO employees (first_name, last_name)
 VALUES ('Freddy','Finance');
@@ -233,4 +241,33 @@ VALUES
 INSERT INTO employees_groups(employee_id,group_id)
 VALUES
 (1,1),(2,2),(3,3);
+
+-- Updates ---------------------------------------------------------------------
+UPDATE employees
+SET salary = 100000
+WHERE id = 1;
+
+UPDATE employees
+SET salary = 110000
+WHERE id = 1;
+
+UPDATE employees
+SET salary = 130000
+WHERE id = 1;
+
+UPDATE employees
+SET salary = 110000
+WHERE id = 2;
+
+UPDATE employees
+SET salary = 130000
+WHERE id = 3;
+
+UPDATE tbl_entities
+SET entity_name = 'Finance 11'
+WHERE id = 1;
+
+UPDATE tbl_groups
+SET group_name = 'Financial'
+WHERE id = 1;
 

@@ -22,7 +22,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_FILES["csvFile"])) {
         }
         fclose($handle);
 
-        // Call stored procedure to merge data
+        // Fetch balances_stage data and output it as JSON
+        $result = $conn->query("SELECT * FROM balances_stage");
+
+        if ($result) {
+            $dataArray = [];
+            while ($row = $result->fetch_assoc()) {
+                $dataArray[] = $row;
+            }
+            echo "<script>console.log(" . json_encode($dataArray) . ");</script>";
+        }
+
         $sp_stmt = $conn->prepare("CALL sp_validate_and_merge_to_balance(?)");
         $sp_stmt->bind_param("i", $emp_id);
         $sp_stmt->execute();
