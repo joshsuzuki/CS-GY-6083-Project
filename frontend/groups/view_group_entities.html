@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Entities in Group</title>
+    <script>
+        function fetchEntities() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const groupId = urlParams.get('group_id');
+
+            if (!groupId) {
+                console.error("Missing group_id parameter.");
+                return;
+            }
+
+            fetch(`../../middleware/view_group_entities.php?group_id=${groupId}`)
+            .then(response => response.json())
+            .then(data => {
+                const entityTable = document.getElementById('entityTable');
+                entityTable.innerHTML = `
+                    <tr>
+                        <th>Entity ID</th>
+                        <th>Group ID</th>
+                        <th>Delete</th>
+                    </tr>
+                `;
+
+                data.forEach(entity => {
+                    entityTable.innerHTML += `
+                        <tr>
+                            <td>${entity.entity_id}</td>
+                            <td>${entity.group_id}</td>
+                            <td><button onclick="deleteEntityGroup(${entity.entity_id}, ${entity.group_id})">Delete</button></td>
+                        </tr>
+                    `;
+                });
+            })
+            .catch(error => console.error('Error fetching entities:', error));
+        }
+
+        function addEntityGroup(event) {
+            event.preventDefault(); // Prevent form default submission
+
+            const groupId = new URLSearchParams(window.location.search).get('group_id');
+            const entityId = document.getElementById('entity_id').value;
+
+            if (!groupId || !entityId) {
+                alert("Please enter a valid Entity ID.");
+                return;
+            }
+
+            fetch('../../middleware/add_entity_group.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `entity_id=${entityId}&group_id=${groupId}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    fetchEntities(); // Refresh the table after adding
+                    document.getElementById('entityForm').reset();
+                } else {
+                    alert("Error adding entity: " + data.error);
+                }
+            })
+            .catch(error => console.error('Error adding entity:', error));
+        }
+
+        function deleteEntityGroup(entityId, groupId) {
+            fetch(`../../middleware/delete_entity_group.php?entity_id=${entityId}&group_id=${groupId}`, { method: 'GET' })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    fetchEntities(); // Refresh the table after deletion
+                } else {
+                    alert("Error deleting entity group: " + data.error);
+                }
+            })
+            .catch(error => console.error("Error deleting record:", error));
+        }
+    </script>
+</head>
+<body onload="fetchEntities()">
+    <h2>Entities in Group</h2>
+    <table border="1" id="entityTable"></table>
+
+    <!-- Form to Add Entity to Group -->
+    <h3>Add Entity to Group</h3>
+    <form id="entityForm" onsubmit="addEntityGroup(event)">
+        <label for="entity_id">Entity ID:</label>
+        <input type="text" id="entity_id" name="entity_id" required>
+        <button type="submit">Add Entity</button>
+    </form>
+
+    <button onclick="window.location.href='view_groups.html'">Back to Groups</button>
+</body>
+</html>

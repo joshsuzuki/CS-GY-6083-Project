@@ -1,6 +1,6 @@
 account,entity,counterparty,month,year,amount,operation
-1,8,10,12,2024,100,'merge'
-1,8,10,11,2024,100,'merge'
-1,8,10,10,2024,100,'merge'
-1,8,10,8,2024,100,'merge'
-1,7,10,8,2024,100,'merge'
+1,8,10,12,2024,100,'delete'
+1,8,10,11,2024,100,'delete'
+1,8,10,10,2024,100,'delete'
+1,8,10,8,2024,100,'delete'
+1,7,10,8,2024,100,'delete'

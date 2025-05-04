@@ -9,5 +9,5 @@ CREATE TABLE balances (
     amount DECIMAL(18,2) DEFAULT 0,
     n_id_updated_by INT NOT NULL,
     dt_last_updated DATETIME DEFAULT NOW(),
-    PRIMARY KEY ( account,entity, counterparty,month,year)
+    PRIMARY KEY (account,entity, counterparty,month,year)
 );

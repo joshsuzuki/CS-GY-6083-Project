@@ -38,7 +38,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_FILES["csvFile"])) {
         $sp_stmt->execute();
         $sp_stmt->close();
 
-        echo "called sp_validate_and_merge_to_balance!";
+        header("Location: ../frontend/balances/upload_balances.html");
+        exit(); // Ensure script execution stops after redirection
+
     } else {
         echo "Error reading CSV file.";
     }
