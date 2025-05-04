@@ -160,6 +160,7 @@ END$$
 DROP PROCEDURE IF EXISTS sp_validate_and_merge_to_balance$$
 CREATE PROCEDURE sp_validate_and_merge_to_balance(IN emp_id INT)
 BEGIN
+    SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
     -- Temp merge table
     CREATE TEMPORARY TABLE temp_merge AS
     SELECT bs.account, bs.entity, bs.counterparty, bs.month, bs.year, bs.amount, emp_id AS n_id_updated_by
@@ -193,6 +194,7 @@ BEGIN
     DROP TEMPORARY TABLE temp_merge;
     
     DELETE FROM balances_stage;
+    SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;
 END $$
 DELIMITER ;
 

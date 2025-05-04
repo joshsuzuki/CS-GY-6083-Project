@@ -28,7 +28,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_FILES["csvFile"])) {
         $sp_stmt->execute();
         $sp_stmt->close();
 
-        echo "CSV data uploaded and merged successfully!";
+        echo "called sp_validate_and_merge_to_balance!";
     } else {
         echo "Error reading CSV file.";
     }
