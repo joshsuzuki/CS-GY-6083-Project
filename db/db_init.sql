@@ -163,6 +163,13 @@ BEGIN
     SET NEW.operation = REPLACE(NEW.operation, "'", "");
 END $$
 
+CREATE TRIGGER after_insert_tbl_entities
+AFTER INSERT ON tbl_entities
+FOR EACH ROW
+BEGIN
+    INSERT INTO groups_entities (group_id, entity_id)
+    VALUES (4, NEW.entity_id);
+END $$
 -- Stored Procedure ----------------------------------------------------------------
 DROP PROCEDURE IF EXISTS sp_validate_and_merge_to_balance$$
 CREATE PROCEDURE sp_validate_and_merge_to_balance(IN emp_id INT)
@@ -216,11 +223,20 @@ VALUES ('Harry','HR');
 INSERT INTO employees (first_name, last_name)
 VALUES ('Timmy','Tech');
 
+INSERT INTO employees (first_name, last_name)
+VALUES ('Diane','Dev');
+
+
 INSERT INTO employee_auth(employee_id,password_hash)
 VALUES
 (1,'$2y$12$VwaHReZde1zNoCrZdH2uBuSuXGMlqJLRW1w0ytO8FOvIrG66RoDhO'),
 (2,'$2y$12$VwaHReZde1zNoCrZdH2uBuSuXGMlqJLRW1w0ytO8FOvIrG66RoDhO'),
-(3,'$2y$12$VwaHReZde1zNoCrZdH2uBuSuXGMlqJLRW1w0ytO8FOvIrG66RoDhO');
+(3,'$2y$12$VwaHReZde1zNoCrZdH2uBuSuXGMlqJLRW1w0ytO8FOvIrG66RoDhO'),
+(4,'$2y$12$VwaHReZde1zNoCrZdH2uBuSuXGMlqJLRW1w0ytO8FOvIrG66RoDhO');
+
+INSERT INTO tbl_groups(group_name)
+VALUES
+('Finance'),('H2'),('Tech'),('Developer');
 
 INSERT INTO tbl_entities(entity_name)
 VALUES
@@ -228,9 +244,7 @@ VALUES
 ('HR 1'),('HR 2'),('HR 3'),('HR 4'),
 ('Tech 1'),('Tech 2'),('Tech 3'),('Tech 4');
 
-INSERT INTO tbl_groups(group_name)
-VALUES
-('Finance'),('H2'),('Tech');
+
 
 INSERT INTO groups_entities(group_id,entity_id)
 VALUES
@@ -240,7 +254,7 @@ VALUES
 
 INSERT INTO employees_groups(employee_id,group_id)
 VALUES
-(1,1),(2,2),(3,3);
+(1,1),(2,2),(3,3),(4,4);
 
 -- Updates ---------------------------------------------------------------------
 UPDATE employees
@@ -265,9 +279,9 @@ WHERE id = 3;
 
 UPDATE tbl_entities
 SET entity_name = 'Finance 11'
-WHERE id = 1;
+WHERE entity_id = 1;
 
 UPDATE tbl_groups
 SET group_name = 'Financial'
-WHERE id = 1;
+WHERE group_id = 1;
 

@@ -15,6 +15,13 @@ BEGIN
     VALUES (OLD.id, OLD.salary);
 END$$
 
+CREATE TRIGGER remove_single_quotes_before_insert
+BEFORE INSERT ON balances_stage
+FOR EACH ROW
+BEGIN
+    SET NEW.operation = REPLACE(NEW.operation, "'", "");
+END $$
+
 -- CREATE TRIGGER after_employee_created
 -- AFTER INSERT ON employees
 -- FOR EACH ROW
